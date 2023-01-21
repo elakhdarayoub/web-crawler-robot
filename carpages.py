@@ -54,6 +54,6 @@ while pageCount < 59:
     #updating the loop counter
     pageCount += 1
 
-#extracting the dataFrame as a csv for later processes
+#extracting the dataFrame as a csv for later processing
 sheet.to_csv('C:/Users/user/Desktop/cars.csv')
-print('scraping process ended succuffully')
+print('scraping process ended successfully')
