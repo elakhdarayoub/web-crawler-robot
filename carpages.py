@@ -1,4 +1,12 @@
-# carpages.ca crawler
+
+                                        #carpages.ca crawler
+                ##################################################################
+                #                                                                #
+                #           coded with pain and love by Ayoub Elakhdar           #
+                #                                                                #
+                ##################################################################
+
+
 ## links
 ## car's name
 ## price
@@ -9,16 +17,20 @@ from pandas import DataFrame as dt
 from bs4 import BeautifulSoup
 import requests
 
+#the page graber function
+def graber(url):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, 'lxml')
+    return soup
+    
 #setting up the crawler and getting the initial page
-
-pageCount  = 1 # used to count the pages in the website and stops at 7
+pageCount = 0 # used to count the pages in the website and stops at 59
 url = 'https://www.carpages.ca/used-cars/search/?fueltype_id%5B0%5D=3&fueltype_id%5B1%5D=7'
-page = requests.get(url)
-soup = BeautifulSoup(page.text, 'lxml')
+soup = graber(url)    
 sheet = dt({'Links':[''], 'Names':[''], 'Prices':[''], 'Car Type':['']})
 
 #initiating the crawler
-while True: 
+while pageCount < 59: 
     #grabing all the listings
     posts = soup.find_all('div', class_ = 'media soft push-none rule')
     
@@ -28,20 +40,20 @@ while True:
         carName = post.find('h4', class_ = 'hN').text.strip()
         price = post.find('strong', class_ = 'delta').text.strip()
         carType = post.find('p', class_ = 'hN').text.strip()
-        #sheet = sheet.append({'Links':link, 'Names':carName, 'Prices':price, 'Car Type':carType}, ignore_index=True)
         sheet.loc[len(sheet)] = [link,carName,price,carType]
     
-    # updating the url with next page link
-    url = 'http://carpages.ca'+soup.find('a', {'title':'Next Page'}).get('href')
-    page = requests.get(url)
-    soup = BeautifulSoup(page.text, 'lxml')
-    
-    # this set manually and will stop once it scrapes the last page
-    if pageCount > 7:
-        print('scraping process ended succuffully')
-        break
+    #updating the url with next page link
+    if pageCount < 57:
+        #grab the next page url only if still there is a next page
+        url = 'http://carpages.ca'+soup.find('a', {'title':'Next Page'}).get('href')
+        soup = graber(url)
     else:
-        pageCount += 1
+        #or just pass getting a link that it's not excist
+        pass
+    
+    #updating the loop counter
+    pageCount += 1
 
-# extracting the dataFrame as a csv to later processes
+#extracting the dataFrame as a csv to later processes
 sheet.to_csv('C:/Users/user/Desktop/cars.csv')
+print('scraping process ended succuffully')
