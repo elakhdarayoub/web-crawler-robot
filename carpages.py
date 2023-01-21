@@ -48,7 +48,7 @@ while pageCount < 59:
         url = 'http://carpages.ca'+soup.find('a', {'title':'Next Page'}).get('href')
         soup = graber(url)
     else:
-        #or just pass getting a link that it's not excist
+        #or just pass getting a link that is not existing
         pass
     
     #updating the loop counter
